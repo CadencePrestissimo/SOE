@@ -1,9 +1,9 @@
 class Server {
   static String baseUrl =
-      "https://console.firebase.google.com/u/0/project/ourapp-9c812/firestore/data/";
-  static String webApi = 'Colleges/India/IIITA/';
-  static String profileUpdate = 'Profile/';
-  static String getProfileData = 'Profile/';
-  static String postAnnouncement = 'Announcements/';
-  static String addAssignment = 'Assignment/';
+      "https://ourapp-9c812-default-rtdb.firebaseio.com/";
+  static String webApi = '';
+  static String profileUpdate = 'profile.json';
+  static String getProfileData = 'profile.json';
+  static String postAnnouncement = 'announcements.json';
+  static String addAssignment = 'assignment.json';
   }

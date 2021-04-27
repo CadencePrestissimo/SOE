@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AppUser {
+  String idd;
   String photoUrl;
   String email;
   String division;
@@ -24,7 +25,9 @@ class AppUser {
   }
 
   AppUser(
-      {this.photoUrl = 'default',
+      {
+        this.idd ='',
+        this.photoUrl = 'default',
       this.email = '',
       this.division = '',
       this.id = '',
@@ -57,6 +60,7 @@ class AppUser {
   }
 
   _fromJson(Map<String, dynamic> json) {
+    idd =json['name'] ?? '';
     photoUrl = json['photoUrl'] ?? 'default';
     email = json['email'] ?? '';
     division = json['section'] ?? '';
@@ -80,6 +84,7 @@ class AppUser {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['idd'] = this.idd;
     data['photoUrl'] = this.photoUrl;
     data['email'] = this.email;
     data['section'] = this.division.toUpperCase().trim();

@@ -4,9 +4,6 @@ import 'imports.dart';
 GetIt locator = GetIt.instance;
 
 void setupLocator() {
-  // locator.registerLazySingleton(() => MainPageModel());
-  // locator.registerSingleton(Services());
-
   locator.registerLazySingleton(() => AnnouncementServices());
   locator.registerFactory(() => CreateAnnouncementModel());
   locator.registerFactory(() => AnnouncementPageModel());

@@ -1,4 +1,4 @@
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 import 'package:ourESchool/imports.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -22,19 +22,6 @@ class ProfileServices extends Services {
     UserType userType,
   }) async {
     UserType userType = await sharedPreferencesHelper.getUserType();
-    // String photoUrl = '';
-    // String url = await sharedPreferencesHelper.getLoggedInUserPhotoUrl();
-
-    // if (user.photoUrl.contains('https')) {
-    //   // photoUrl = url;
-    // } else if (user.photoUrl == 'default') {
-    //   // user.photoUrl = user.photoUrl;
-    // } else {
-    //   user.photoUrl = await storageServices.setProfilePhoto(user.photoUrl);
-    // }
-
-    // user.photoUrl = photoUrl;
-
     Map profileDataHashMap = user.toJson();
 
     var body = json.encode({
@@ -44,49 +31,29 @@ class ProfileServices extends Services {
       "country": country
     });
 
-    Dio dio = Dio();
-    Options options = Options(
-      followRedirects:true,
-      validateStatus: (status) {
-        return status <= 500;
-      },
-      contentType: 'application/json',
-      headers:{'Authorization': 'BearerAIzaSyCB53hr0UGDU_SPzQRaLVCpo_Vz1OCuA6c'},
-    );
 
-    final response = await dio.post(
-      profileUpdateUrl,
-      options: options,
-      data: body,
-      // body: body,
-      // headers: headers,
-    );
-
-    if (response.statusCode == 200) {
-      // getProfileData(user.id, userType);
+    http.post('https://ourapp-9c812-default-rtdb.firebaseio.com/profile.json', body: body).then((http.Response response) async {
       print("Data Uploaded Succesfully");
-      final jsonData = await json.decode(response.data.toString());
-
+      final jsonData = await json.decode(response.body.toString());
       AppUser user = AppUser.fromJson(jsonData);
-      sharedPreferencesHelper.setUserDataModel(response.data.toString());
+      sharedPreferencesHelper.setUserDataModel(response.body.toString());
       loggedInUserStream.add(user);
-    } else {
-      print("Data Upload error");
-    }
+
+    });
+
   }
+
 
   Future<AppUser> getLoggedInUserProfileData() async {
     // if (schoolCode == null)
     await getSchoolCode();
     String id = await sharedPreferencesHelper.getLoggedInUserId();
     UserType userType = await sharedPreferencesHelper.getUserType();
-
     String userDataModel = await sharedPreferencesHelper.getUserDataModel();
 
     if (userDataModel != 'N.A') {
       print("Data Retrived Succesfully (Local)");
       final jsonData = await json.decode(userDataModel);
-
       AppUser user = AppUser.fromJson(jsonData);
       loggedInUserStream.add(user);
       user.toString();
@@ -102,38 +69,26 @@ class ProfileServices extends Services {
 
     print(body);
 
-    Dio dio = Dio();
-    Options options = Options(
-      followRedirects: true,
-      validateStatus: (status) {
-        return status <= 500;
-      },
-      contentType: 'application/json',
-      headers:{'Authorization': 'BearerAIzaSyCB53hr0UGDU_SPzQRaLVCpo_Vz1OCuA6c'},
-    );
-
-    final response = await dio.post(
-      getProfileDataUrl,
-      options: options,
-      data: body,
-      // body: body,
-      // headers: headers,
-    );
-    if (response.statusCode == 200) {
+    http.post('https://ourapp-9c812-default-rtdb.firebaseio.com/profile.json', body: body).then((http.Response response) async {
       print("Data Retrived Succesfully");
-      final jsonData = await json.decode(response.data.toString());
-
+      final jsonData = await json.decode(response.body.toString());
       AppUser user = AppUser.fromJson(jsonData);
-      sharedPreferencesHelper.setUserDataModel(response.data.toString());
+      sharedPreferencesHelper.setUserDataModel(response.body.toString());
       loggedInUserStream.add(user);
       user.toString();
       return user;
-    } else {
-      print("Data Retrived failed");
-      return AppUser(id: id);
-    }
+    });
+
   }
 
+
+  /*---------------------------------
+
+   http.get('https://ourapp-9c812-default-rtdb.firebaseio.com/profile.json').then((http.Response response){
+  print(json.decode(response.body)) ;
+  });
+
+  --------------------------------------------------------------------------------------------*/
   //Fetch Profile Data Using Firestore SDK
   Future<AppUser> getProfileDataById(String uid, UserType userType) async {
     DocumentReference profielRef = await _getProfileRef(uid, userType);
@@ -210,35 +165,13 @@ class ProfileServices extends Services {
 
     print(body);
 
-    Dio dio = Dio();
-    Options options = Options(
-      followRedirects: true,
-      validateStatus: (status) {
-        return status <= 500;
-      },
-      contentType: 'application/json',
-      headers:{'Authorization': 'BearerAIzaSyCB53hr0UGDU_SPzQRaLVCpo_Vz1OCuA6c'},
-    );
-
-    final response = await dio.post(
-      profileUpdateUrl,
-      options: options,
-      data: body,
-      // body: body,
-      // headers: headers,
-    );
-
-
-    if (response.statusCode == 200) {
+    http.post('https://ourapp-9c812-default-rtdb.firebaseio.com/profile.json', body: body).then((http.Response response) async {
       print("Data Retrived Succesfully");
-      final jsonData = await json.decode(response.data.toString());
-
+      final jsonData = await json.decode(response.body.toString());
       AppUser user = AppUser.fromJson(jsonData);
       user.toString();
+      print (user.toString());
       return user;
-    } else {
-      print("Data Retrived failed");
-      return AppUser(id: uid);
-    }
+    });
   }
 }

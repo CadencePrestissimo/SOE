@@ -4,15 +4,13 @@ import 'dart:ui' as ui;
 
 class LoginPage extends StatefulWidget {
   static const id = 'LoginPage';
-  // static UserType loginTypeSelected = UserType.STUDENT;
-
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
   // String idHint = string.student_id;
-  UserType loginTypeSelected = UserType.STUDENT;
+  UserType loginTypeSelected = WelcomeScreen.loginType;
   bool isRegistered = false;
   String notYetRegisteringText = string.not_registered;
   ButtonType buttonType = ButtonType.LOGIN;
@@ -45,6 +43,8 @@ class _LoginPageState extends State<LoginPage> {
           buttonType: buttonType,
           confirmPassword: confirmPasswordController.text,
         );
+
+
         if (response) {
           if (locator<AuthenticationServices>().userType == UserType.PARENT) {
             Navigator.pushNamedAndRemoveUntil(
@@ -70,6 +70,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return BaseView<LoginPageModel>(
       onModelReady: (model) => model,
       builder: (context, model, child) {
