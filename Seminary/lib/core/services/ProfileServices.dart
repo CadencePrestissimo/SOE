@@ -1,15 +1,21 @@
+import 'dart:wasm';
+
 import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 import 'package:ourESchool/imports.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ourESchool/core/helpers/SQL.dart';
 
 class ProfileServices extends Services {
+
+  static AppUser A;
   StorageServices storageServices = locator<StorageServices>();
   StreamController<AppUser> loggedInUserStream =
       StreamController.broadcast(sync: true);
 
   String country = Services.country;
-
+  static String idd='';
   List<AppUser> childrens = [];
 
   ProfileServices() {
@@ -24,60 +30,110 @@ class ProfileServices extends Services {
     UserType userType = await sharedPreferencesHelper.getUserType();
     Map profileDataHashMap = user.toJson();
 
-    var body = json.encode({
-      "schoolCode": schoolCode.trim().toUpperCase(),
-      "profileData": profileDataHashMap,
-      "userType": UserTypeHelper.getValue(userType),
-      "country": country
-    });
+    var body = json.encode(profileDataHashMap);
 
-
-    http.post('https://ourapp-9c812-default-rtdb.firebaseio.com/profile.json', body: body).then((http.Response response) async {
-      print("Data Uploaded Succesfully");
-      final jsonData = await json.decode(response.body.toString());
-      AppUser user = AppUser.fromJson(jsonData);
+      http.post('https://ourapp-9c812-default-rtdb.firebaseio.com/profile.json', body: body).then((http.Response response) async {
+    //  print("Data Uploaded Succesfully");
+      final Map<String,dynamic> data=json.decode(response.body);
+      idd =data['name'] ?? '';
+      AppUser user = AppUser.fromJson( data);
+      Word w=new Word();
+      w.id=user.id;
+      w.name=user.guardianName;
+      w.dob=user.dob;
+      w.mobileNo=user.mobileNo;
+      w.bloodGroup=user.bloodGroup;
+      w.division=user.division;
+      w.standard=user.standard;
+      w.enrollNo=user.enrollNo;
+      DatabaseHelper helper = DatabaseHelper.instance;
+      helper.insert(w);
       sharedPreferencesHelper.setUserDataModel(response.body.toString());
       loggedInUserStream.add(user);
 
     });
 
+
   }
 
 
-  Future<AppUser> getLoggedInUserProfileData() async {
+   Future getLoggedInUserProfileData() async {
     // if (schoolCode == null)
     await getSchoolCode();
+    AppUser USER;
     String id = await sharedPreferencesHelper.getLoggedInUserId();
     UserType userType = await sharedPreferencesHelper.getUserType();
     String userDataModel = await sharedPreferencesHelper.getUserDataModel();
 
     if (userDataModel != 'N.A') {
       print("Data Retrived Succesfully (Local)");
-      final jsonData = await json.decode(userDataModel);
-      AppUser user = AppUser.fromJson(jsonData);
-      loggedInUserStream.add(user);
-      user.toString();
-      return user;
+
+      http.get('https://ourapp-9c812-default-rtdb.firebaseio.com/profile.json').then((http.Response response) {
+      //  print(json.decode(response.body));
+        final Map<String, dynamic> newdata=json.decode(response.body);
+        newdata.forEach((String key , dynamic pdata) async {
+
+          if(pdata[id]==id)
+            {
+              print(pdata);
+              AppUser user = AppUser.fromJson(pdata);
+              print(user.guardianName);
+              sharedPreferencesHelper.setUserDataModel(pdata.toString());
+              loggedInUserStream.add(user);
+              USER=user;
+        /*      Word w=Word();
+              w.id=user.id;
+              w.name=user.displayName;
+              w.enrollNo=user.enrollNo;
+              w.standard=user.standard;
+              w.division=user.division;
+              w.guardianName = user.guardianName;
+              w.bloodGroup=user.bloodGroup;
+              w.dob=user.dob;
+              w.mobileNo=user.mobileNo;
+
+              DatabaseHelper helper = DatabaseHelper.instance;
+              await helper.insert(w); */
+              print(USER.displayName);
+              return USER;
+            }
+        });
+      });
     }
+    else
+      {
+        http.get('https://ourapp-9c812-default-rtdb.firebaseio.com/profile.json').then((http.Response response) {
+         // print(json.decode(response.body));
+          final Map<String, dynamic> newdata=json.decode(response.body);
+          newdata.forEach((String key , dynamic pdata) async {
+            if(pdata['id']==id)
+            {
+              print(pdata);
+              final AppUser user = AppUser.fromJson(pdata);
+              print(user.email);
+              sharedPreferencesHelper.setUserDataModel(pdata.toString());
+              loggedInUserStream.add(user);
+              USER=user;
+            /*  Word w=Word();
+              w.id=user.id;
+              w.name=user.displayName;
+              w.enrollNo=user.enrollNo;
+              w.standard=user.standard;
+              w.division=user.division;
+              w.guardianName = user.guardianName;
+              w.bloodGroup=user.bloodGroup;
+              w.dob=user.dob;
+              w.mobileNo=user.mobileNo;
+              DatabaseHelper helper = DatabaseHelper.instance;
+              await helper.insert(w); */
+              print(USER.displayName);
+              return USER;
+            }
 
-    var body = json.encode({
-      "schoolCode": schoolCode.trim().toUpperCase(),
-      "id": id,
-      "userType": UserTypeHelper.getValue(userType),
-      "country": country
-    });
+          });
+        });
 
-    print(body);
-
-    http.post('https://ourapp-9c812-default-rtdb.firebaseio.com/profile.json', body: body).then((http.Response response) async {
-      print("Data Retrived Succesfully");
-      final jsonData = await json.decode(response.body.toString());
-      AppUser user = AppUser.fromJson(jsonData);
-      sharedPreferencesHelper.setUserDataModel(response.body.toString());
-      loggedInUserStream.add(user);
-      user.toString();
-      return user;
-    });
+      }
 
   }
 
@@ -168,7 +224,7 @@ class ProfileServices extends Services {
     http.post('https://ourapp-9c812-default-rtdb.firebaseio.com/profile.json', body: body).then((http.Response response) async {
       print("Data Retrived Succesfully");
       final jsonData = await json.decode(response.body.toString());
-      AppUser user = AppUser.fromJson(jsonData);
+      AppUser user = AppUser.fromJson( jsonData);
       user.toString();
       print (user.toString());
       return user;

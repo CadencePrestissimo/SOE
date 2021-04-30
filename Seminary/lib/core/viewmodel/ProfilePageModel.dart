@@ -1,12 +1,24 @@
 import 'dart:async';
+import 'package:http/http.dart' as http;
 import 'package:ourESchool/core/Models/User.dart';
 import 'package:ourESchool/core/enums/UserType.dart';
 import 'package:ourESchool/core/enums/ViewState.dart';
+import 'package:ourESchool/core/helpers/SQL.dart';
 import 'package:ourESchool/core/services/ProfileServices.dart';
 import 'package:ourESchool/core/viewmodel/BaseModel.dart';
+import 'package:ourESchool/imports.dart';
 import 'package:ourESchool/locator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+StorageServices storageServices = locator<StorageServices>();
+StreamController<AppUser> loggedInUserStream =
+StreamController.broadcast(sync: true);
+
+
+
 
 class ProfilePageModel extends BaseModel {
+
   final _profileServices = locator<ProfileServices>();
 
   AppUser userProfile;
@@ -31,20 +43,20 @@ class ProfilePageModel extends BaseModel {
 
     await _profileServices.setProfileData(user: user, userType: userType);
     await Future.delayed(const Duration(seconds: 1), () {});
-
     setState(ViewState.Idle);
     return true;
   }
 
-  Future<AppUser> getUserProfileData() async
+
+  Future getUserProfileData() async
   {
     setState(ViewState.Busy);
     setState2(ViewState.Busy);
-    userProfile = await _profileServices.getLoggedInUserProfileData();
-    // loggedInUserStream.add(userProfile);
+    AppUser user = await _profileServices.getLoggedInUserProfileData();
+    //userProfile = user;;
     setState2(ViewState.Idle);
     setState(ViewState.Idle);
-    return userProfile;
+    return user;
   }
 
   getChildrens() async {

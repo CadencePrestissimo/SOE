@@ -61,7 +61,7 @@ class _HomeState extends State<Home> {
           ),
           onPressed: () {
             if (userType == UserType.PARENT) {
-              kopenPage(context, GuardianProfilePage());
+              kopenPage(context, ProfilePage());
             } else {
               kopenPage(context, ProfilePage());
             }

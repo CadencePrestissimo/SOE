@@ -1,7 +1,8 @@
 import 'package:ourESchool/core/enums/UserType.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SharedPreferencesHelper {
+class SharedPreferencesHelper
+{
   final String _kCountryCodePrefs = "countryCode";
   final String _kCountryNamePrefs = "countryName";
   final String _userType = 'userType';

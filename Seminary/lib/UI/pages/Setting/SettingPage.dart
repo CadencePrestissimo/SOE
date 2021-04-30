@@ -9,6 +9,7 @@ import 'package:ourESchool/UI/pages/WelcomeScreen.dart';
 import 'package:ourESchool/core/enums/UserType.dart';
 import 'package:ourESchool/core/helpers/shared_preferences_helper.dart';
 import 'package:ourESchool/core/viewmodel/LoginPageModel.dart';
+import 'package:ourESchool/imports.dart';
 import 'package:ourESchool/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -45,11 +46,8 @@ class _SettingPageState extends State<SettingPage> {
                   icon: FontAwesomeIcons.user,
                   onTap: () {
                     UserType userType = Provider.of<UserType>(context, listen: false);
-                    if (userType == UserType.PARENT) {
-                      kopenPage(context, GuardianProfilePage());
-                    } else {
-                      kopenPage(context, ProfilePage());
-                    }
+                      kopenPage(context, ECardPage());
+
                   },
                   subtitle: string.profile_subtitle,
                   title: string.profile),

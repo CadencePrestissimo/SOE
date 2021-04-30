@@ -1,7 +1,9 @@
+import 'package:ourESchool/UI/pages/AllStudents/DatabaseManager.dart';
 import 'package:ourESchool/imports.dart';
 
 class ChatServices extends Services {
   ProfileServices _profileServices = locator<ProfileServices>();
+
   AppUser _currentUser = AppUser();
 
   Map<String, DocumentSnapshot> studentsDocumentSnapshots =
@@ -17,6 +19,9 @@ class ChatServices extends Services {
   Map<String, List<AppUser>> studentsParentListMap = Map();
 
   List<AppUser> get childrens => _profileServices.childrens;
+
+
+
 
   ChatServices() {
     getSchoolCode();
@@ -108,7 +113,7 @@ class ChatServices extends Services {
     var ref = (await schoolRefwithCode())
         .doc('Chats')
         .collection(student.standardDivision())
-        .doc('Parent-Teacher')
+        .doc('Admin-Faculty')
         .collection(loggedIn.id)
         .doc(other.id);
 

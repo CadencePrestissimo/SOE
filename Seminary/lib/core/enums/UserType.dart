@@ -4,7 +4,7 @@ class UserTypeHelper {
   static String getValue(UserType userType) {
     switch (userType) {
       case UserType.PARENT:
-        return "PARENT";
+        return "ADMIN";
       case UserType.STUDENT:
         return "STUDENT";
       case UserType.TEACHER:

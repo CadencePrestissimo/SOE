@@ -1,9 +1,11 @@
+import 'package:ourESchool/UI/pages/AllStudents/AllStudents.dart';
 import 'package:ourESchool/UI/pages/Dashboard/AcademicCalendar/AcademicCalendar.dart';
 import 'package:ourESchool/UI/pages/Dashboard/CommitteeFormation/StudentViewCommittee.dart';
 import 'package:ourESchool/UI/pages/Students/Students.dart';
 import 'package:ourESchool/imports.dart';
 
 class StudentDashboard extends StatefulWidget with AnalyticsScreen {
+  static const id = 'StudentDashboard';
   StudentDashboard({Key key}) : super(key: key) {
     // setCurrentScreen();
   }
@@ -215,6 +217,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
                                 kopenPage(context, LoadFirbaseStoragePdf());
                               },
                               icon: FontAwesomeIcons.calendar),
+
                         ],
                       ),
                     ),

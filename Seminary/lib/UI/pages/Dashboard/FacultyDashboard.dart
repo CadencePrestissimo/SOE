@@ -1,3 +1,6 @@
+
+import 'package:ourESchool/UI/pages/AllStudents/AllStudents.dart';
+import 'package:ourESchool/UI/pages/AllFaculties/AllFaculties.dart';
 import 'package:ourESchool/UI/pages/Dashboard/AcademicCalendar/AcademicCalendar.dart';
 import 'package:ourESchool/UI/pages/Dashboard/CommitteeFormation/AdminViewCommittee.dart';
 import 'package:ourESchool/UI/pages/Dashboard/CourseRegistration/AdminCoursesRegistration.dart';
@@ -7,6 +10,7 @@ import 'package:ourESchool/core/helpers/FirebaseAnalytics.dart';
 import 'package:ourESchool/imports.dart';
 
 class MainDashboard extends StatefulWidget with AnalyticsScreen {
+  static const id = 'MainDashboard';
   MainDashboard({Key key}) : super(key: key) {
     // setCurrentScreen();
   }
@@ -200,6 +204,46 @@ class _MainDashboardState extends State<MainDashboard> {
                       },
                       icon: FontAwesomeIcons.calendar,
                     ),
+
+                    SizedBox(
+                      height: 80,
+                      child: ListView(
+                        shrinkWrap: false,
+                        scrollDirection: Axis.horizontal,
+                        children: <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              RowReusableCardButton(
+                                tileColor: Colors.redAccent,
+                                icon: FontAwesomeIcons.child,
+                                label:"All Students",
+                                onPressed: () {
+                                  kopenPage(context, DashboardScreen());
+                                },
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  RowReusableCardButton(
+                                    tileColor: Colors.green,
+                                    icon: FontAwesomeIcons.male,
+                                    label:"All faculties",
+                                    onPressed: () {
+                                      kopenPage(context, DashboardScreenF());
+                                    },
+                                  ) ,
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
             ],
           ),
         ),

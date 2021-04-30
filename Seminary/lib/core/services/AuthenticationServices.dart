@@ -1,41 +1,20 @@
 import 'package:flutter/foundation.dart';
 import 'package:ourESchool/imports.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ourESchool/UI/pages/AllStudents/DatabaseManager.dart';
 
 class AuthenticationServices extends Services {
-  // Future handleGoogleSignIn() async {
-  //   try {
-  //     AuthCredential credential;
-  //     final GoogleSignInAccount googleUser = await _googleSignIn.signIn().catchError((e) {
-  //       throw e;
-  //     });
-  //     await googleUser.authentication.then((onValue) async {
-  //       credential = GoogleAuthProvider.getCredential(
-  //         accessToken: onValue.accessToken,
-  //         idToken: onValue.idToken,
-  //       );
-  //       _firebaseUser = await _auth.signInWithCredential(credential);
-  //     });
-  //     print("signed in " + _firebaseUser.displayName);
-  //   } on PlatformException catch (e) {
-  //     print(e.toString());
-  //   }
-  // }
 
   bool isUserLoggedIn = false;
   UserType userType = UserType.STUDENT;
-
   StreamController<User> fireBaseUserStream = StreamController<User>();
   StreamController<bool> isUserLoggedInStream = StreamController<bool>();
   StreamController<UserType> userTypeStream = StreamController<UserType>();
 
   ProfileServices _profileServices = locator<ProfileServices>();
 
-  AuthenticationServices() : super() {
-    // if (kIsWeb) firestore.enablePersistence();
-    if (!kIsWeb) firestore.settings = Settings(persistenceEnabled: true);
-    // firestore.settings(
-    //   persistenceEnabled: false,
-    // );
+  AuthenticationServices() : super()
+  {
     isLoggedIn().then((onValue) => isUserLoggedIn = onValue);
     _userType().then((onValue) => userType = onValue);
   }
@@ -45,9 +24,6 @@ class AuthenticationServices extends Services {
     fireBaseUserStream.add(firebaseUser);
     String name = firebaseUser != null ? firebaseUser.email.toString() : 'Null';
     print('User Email :' + name);
-    // if (firebaseUser == null) {
-    //   await logoutMethod();
-    // }
     isUserLoggedIn = firebaseUser == null ? false : true;
     isUserLoggedInStream.add(isUserLoggedIn);
     if (isUserLoggedIn) _profileServices.getLoggedInUserProfileData();
@@ -61,7 +37,16 @@ class AuthenticationServices extends Services {
     return userType;
   }
 
+
+
+
   Future checkDetails({
+    @required String name,
+    @required String rollNo,
+    @required String semester,
+    @required String course,
+    @required String branch,
+    @required String batch,
     @required String schoolCode,
     @required String email,
     @required String password,
@@ -110,23 +95,17 @@ class AuthenticationServices extends Services {
           userDataLogin = UserDataLogin(
             email: documentSnapshot["email"].toString(),
             id: documentSnapshot["id"].toString(),
-           // parentIds:
-           //     documentSnapshot['parentId'] as Map<dynamic, dynamic> ?? null,
+            parentIds:
+                documentSnapshot['parentId'] as Map<dynamic, dynamic> ?? null,
           );
-          // DocumentReference ref = documentSnapshot["ref"] as DocumentReference;
-          // print('Insude Document Reference');
-          // ref.get().then(
-          //       (onValue) => print(
-          //         'Dataaa : ' + onValue.data.toString(),
-          //       ),
-          //     );
+
         } else {
           userDataLogin = UserDataLogin(
             email: documentSnapshot["email"].toString(),
             id: documentSnapshot["id"].toString(),
             isATeacher: documentSnapshot["isATeacher"] as bool,
-            // childIds:
-            //     documentSnapshot["childId"] as Map<dynamic, dynamic> ?? null,
+             childIds:
+                 documentSnapshot["childId"] as Map<dynamic, dynamic> ?? null,
           );
         }
       });
@@ -166,7 +145,7 @@ class AuthenticationServices extends Services {
     return ReturnType.SUCCESS;
   }
 
-  Future emailPasswordRegister(String email, String password, UserType userType,
+  Future emailPasswordRegister( String name, String rollNo,  String semester, String course, String branch, String batch, String email, String password, UserType userType,
       String schoolCode) async {
     // await sharedPreferencesHelper.clearAllData();
     try {
@@ -177,6 +156,7 @@ class AuthenticationServices extends Services {
       authErrors = AuthErrors.SUCCESS;
       sharedPreferencesHelper.setSchoolCode(schoolCode);
       print("User Regestered using Email and Password");
+      await DatabaseManager().createUserData(userType.toString(),name,rollNo,semester,course,branch,batch,firebaseUser.uid);
       // sharedPreferencesHelper.setUserType(userType);
       isUserLoggedIn = true;
       isUserLoggedInStream.add(isUserLoggedIn);
@@ -208,23 +188,6 @@ class AuthenticationServices extends Services {
     }
   }
 
-  // Future<User> fetchUserData() async {
-  //   FirebaseUser user = await auth.currentUser();
-  //   if (user == null) {
-  //     print("No User LogedIn");
-  //     return null;
-  //   }
-  //   User userr = User(
-  //     displayName: user.displayName,
-  //     mobileNo: user.phoneNumber,
-  //     email: user.email,
-  //     firebaseUuid: user.uid,
-  //     isVerified: user.isEmailVerified,
-  //     photoUrl: user.photoUrl,
-  //   );
-  //   print(userr.toString());
-  //   return userr;
-  // }
 
   logoutMethod() async {
     await auth.signOut();

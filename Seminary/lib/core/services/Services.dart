@@ -11,6 +11,7 @@ abstract class Services {
 
   SharedPreferencesHelper _sharedPreferencesHelper =
       locator<SharedPreferencesHelper>();
+
   static String country =
       "India"; //Get this from firstScreen(UI Not developed yet)
   static FirebaseAuth _auth = FirebaseAuth.instance;
@@ -72,5 +73,6 @@ abstract class Services {
   Future<String> getSchoolCode() async {
     schoolCode = await _sharedPreferencesHelper.getSchoolCode();
     return schoolCode;
+
   }
 }

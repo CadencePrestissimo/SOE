@@ -16,12 +16,15 @@ import 'package:ourESchool/core/enums/UserType.dart';
 import 'package:ourESchool/core/enums/ViewState.dart';
 import 'package:ourESchool/core/helpers/shared_preferences_helper.dart';
 import 'package:ourESchool/core/viewmodel/ProfilePageModel.dart';
+import 'package:ourESchool/imports.dart';
 import 'package:ourESchool/locator.dart';
 import 'package:provider/provider.dart';
+import 'package:ourESchool/core/helpers/SQL.dart';
 
 import 'GuardianProfile.dart';
 
 class ProfilePage extends StatefulWidget {
+
   static const id = 'ProfilePage';
   ProfilePage({Key key}) : super(key: key);
 
@@ -35,6 +38,11 @@ class _ProfilePageState extends State<ProfilePage> {
   String path = 'default';
   // String tempPath = '';
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+
+
+
+
 
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -58,8 +66,6 @@ class _ProfilePageState extends State<ProfilePage> {
   String _enrollNo = '';
   String _standard = '';
   String _division = '';
-  String _guardianName = '';
-  String _bloodGroup = '';
   String _dob = '';
   String _mobileNo = '';
   int a = 0;
@@ -69,25 +75,23 @@ class _ProfilePageState extends State<ProfilePage> {
 
     // var firebaseUser = Provider.of<FirebaseUser>(context, listen: false);
 
-    if (_bloodGroup.isEmpty ||
+    if (
         _division.isEmpty ||
         _name.isEmpty ||
         _dob.isEmpty ||
-        _guardianName.isEmpty ||
         _mobileNo.isEmpty ||
         _standard.isEmpty ||
         _enrollNo.isEmpty) {
       _scaffoldKey.currentState.showSnackBar(ksnackBar(
           context, 'You Need to fill all the details and a profile Photo'));
     } else {
+
       if (model.state == ViewState.Idle) {
         res = await model.setUserProfileData(
           user: AppUser(
-            bloodGroup: _bloodGroup.trim(),
             displayName: _name.trim(),
             division: _division.trim(),
             dob: _dob.trim(),
-            guardianName: _guardianName.trim(),
             mobileNo: _mobileNo.trim(),
             standard: _standard.trim(),
             enrollNo: _enrollNo.trim(),
@@ -104,7 +108,7 @@ class _ProfilePageState extends State<ProfilePage> {
       }
     }
 
-    if (res==true) {
+    if (true) {
       Navigator.pushNamedAndRemoveUntil(context, Home.id, (r) => false);
     }
   }
@@ -123,7 +127,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    userType = Provider.of<UserType>(context, listen: false);
+
+    userType = Provider.of<UserType>(context, listen: true); ///Changed to false
     var firebaseUser = Provider.of<User>(context, listen: true);
 
     if (userType == UserType.STUDENT) {
@@ -131,31 +136,17 @@ class _ProfilePageState extends State<ProfilePage> {
     } else {
       guardiansPanel = true;
     }
+
+
     return BaseView<ProfilePageModel>(
+
         onModelReady: (model) => model.getUserProfileData(),
         builder: (context, model, child) {
-          if (model.state == ViewState.Idle) {
-            if (a == 0) {
-              if (model.userProfile != null) {
-                AppUser user = model.userProfile;
-                _name = user.displayName;
-                _enrollNo = user.enrollNo;
-                _standard = user.standard;
-                _division = user.division.toUpperCase();
-                _guardianName = user.guardianName;
-                _bloodGroup = user.bloodGroup;
-                _dob = user.dob;
-                _mobileNo = user.mobileNo;
-                path = user.photoUrl;
-                a++;
-              }
-            }
-          }
 
           return Scaffold(
             key: _scaffoldKey,
             appBar: TopBar(
-              title: string.profile,
+              title: "Lets Start",
               child: kBackBtn,
               onPressed: () {
                 if (model.state ==
@@ -168,253 +159,67 @@ class _ProfilePageState extends State<ProfilePage> {
               elevation: 20,
               backgroundColor: Colors.red,
               onPressed: () async {
-                // Navigator.pushNamedAndRemoveUntil(context, Home.id, (r) => false);
-               await floatingButtonPressed(model, userType, firebaseUser);
+                Navigator.pushNamedAndRemoveUntil(context, Home.id, (r) => false);
+                // await floatingButtonPressed(model, userType, firebaseUser);
               },
-              child: model.state == ViewState.Busy
-                  ? SpinKitDoubleBounce(
-                      color: Colors.white,
-                      size: 20,
-                    )
-                  : Icon(Icons.check),
+              child: Icon(Icons.arrow_forward),
             ),
             body: SafeArea(
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Column(
-                    // fit: StackFit.loose,
-                    children: <Widget>[
-                      model.state2 == ViewState.Busy
-                          ? kBuzyPage(color: Theme.of(context).primaryColor)
-                          : buildProfilePhotoWidget(context, model),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            ProfileFields(
-                              width: MediaQuery.of(context).size.width,
-                              hintText: "Student/Faculty name",
-                              labelText: "Student/Faculty name",
-                              onChanged: (name) {
-                                print(name);
-                                _name = name;
-                              },
-                              controller: TextEditingController(text: _name),
-                            ),
-                            ProfileFields(
-                              width: MediaQuery.of(context).size.width,
-                              hintText: "Student/Faculty Id",
-                              labelText: "Student/Faculty Id",
-                              onChanged: (id) {
-                                _enrollNo = id;
-                              },
-                              controller:
-                                  TextEditingController(text: _enrollNo),
-                            ),
-                            Row(
-                              // mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Expanded(
-                                  child: ProfileFields(
-                                    labelText: "Batch",
-                                    onChanged: (std) {
-                                      _standard = std;
-                                    },
-                                    hintText: "Batch",
-                                    controller:
-                                        TextEditingController(text: _standard),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Expanded(
-                                  child: ProfileFields(
-                                    labelText: "Section",
-                                    onChanged: (div) {
-                                      _division = div;
-                                    },
-                                    hintText: 'Section',
-                                    controller:
-                                        TextEditingController(text: _division),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            ProfileFields(
-                              width: MediaQuery.of(context).size.width,
-                              hintText: string.father_mother_name,
-                              labelText: string.guardian_name,
-                              onChanged: (guardianName) {
-                                _guardianName = guardianName;
-                              },
-                              controller:
-                                  TextEditingController(text: _guardianName),
-                            ),
-                            Row(
-                              // mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Expanded(
-                                  child: InkWell(
-                                    onTap: () async {
-                                      await _selectDate(context);
-                                    },
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: IgnorePointer(
-                                      child: ProfileFields(
-                                          labelText: string.dob,
-                                          textInputType: TextInputType.number,
-                                          onChanged: (dob) {
-                                            _dob = dob;
-                                          },
-                                          hintText: '',
-                                          controller: TextEditingController(
-                                            text: _dob,
-                                          )
-                                          // initialText: dateOfBirth == null
-                                          //     ? ''
-                                          //     : dateOfBirth
-                                          //         .toLocal()
-                                          //         .toString()
-                                          //         .substring(0, 10),
-                                          ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Expanded(
-                                  child: ProfileFields(
-                                    // width: MediaQuery.of(context).size.width,
-                                    hintText: string.blood_group_hint,
-                                    labelText: string.blood_group,
-                                    onChanged: (bg) {
-                                      _bloodGroup = bg;
-                                    },
-                                    controller: TextEditingController(
-                                        text: _bloodGroup),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            ProfileFields(
-                              width: MediaQuery.of(context).size.width,
-                              textInputType: TextInputType.number,
-                              hintText: string.your_parents,
-                              labelText: string.mobile_no,
-                              onChanged: (mobile_no) {
-                                _mobileNo = mobile_no;
-                              },
-                              controller:
-                                  TextEditingController(text: _mobileNo),
-                            ),
-                            Visibility(
-                              visible: false,
-                              child: Column(
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 10),
-                                    child: Text(
-                                      string.guardians_profile,
-                                      style: ktitleStyle.copyWith(
-                                        fontWeight: FontWeight.w500,
-                                        // color: kmainColorParents.withOpacity(0.4),
-                                        fontSize: 18,
-                                      ),
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Expanded(
-                                        child: ReusableRoundedButton(
-                                          elevation: 5,
-                                          child: Text(
-                                            string.mother,
-                                            textAlign: TextAlign.center,
-                                            style: ktitleStyle.copyWith(
-                                                color: Colors.white
-                                                    .withOpacity(0.8)),
-                                          ),
-                                          onPressed: () {
-                                            kopenPage(
-                                              context,
-                                              GuardianProfilePage(
-                                                title: string.mother,
-                                              ),
-                                            );
-                                          },
-                                          backgroundColor: kmainColorParents,
-                                          height: 40,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: ReusableRoundedButton(
-                                          elevation: 5,
-                                          child: Text(
-                                            string.father,
-                                            textAlign: TextAlign.center,
-                                            style: ktitleStyle.copyWith(
-                                                color: Colors.white
-                                                    .withOpacity(0.8)),
-                                          ),
-                                          onPressed: () {
-                                            kopenPage(
-                                              context,
-                                              GuardianProfilePage(
-                                                title: string.father,
-                                              ),
-                                            );
-                                          },
-                                          backgroundColor: kmainColorParents,
-                                          // height: 50,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: ReusableRoundedButton(
-                                          elevation: 5,
-                                          child: Text(
-                                            string.other,
-                                            textAlign: TextAlign.center,
-                                            style: ktitleStyle.copyWith(
-                                                color: Colors.white
-                                                    .withOpacity(0.8)),
-                                          ),
-                                          onPressed: () {
-                                            kopenPage(
-                                              context,
-                                              GuardianProfilePage(
-                                                title: string.other,
-                                              ),
-                                            );
-                                          },
-                                          backgroundColor: kmainColorParents,
-                                          // height: 50,
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
+                  padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+                  child: Center(
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(height: 20,),
+                        Image(image: AssetImage('assets/IIIT.png'),
+                            height: 150),
+                        Text(
+                          'Welcome To ',
+                          style: TextStyle(fontSize: 25 , fontWeight: FontWeight.bold, fontFamily: kFontFamily, color: Colors.deepPurple),
+                        ),
+                        Text(
+                          ' IIIT Allahabad ',
+                          style: TextStyle(fontSize: 20 , fontWeight: FontWeight.w800, fontFamily: kFontFamily),
+                        ),
+                        SizedBox(height: 10,),
+                        Row(
+                          children: [
+                            Image(image: AssetImage('assets/1.png'),
+                                height: 150,
+                                width:180),
+                            SizedBox(width: 10,),
+                            Image(image: AssetImage('assets/2.png'),
+                                height: 150,
+                                width:180),
                           ],
                         ),
-                      ),
-                    ],
+
+                        SizedBox(height: 5,),
+                        Row(
+                          children: [
+                            Image(image: AssetImage('assets/3.png'),
+                                height: 150,
+                            width:180),
+                            SizedBox(width: 10,),
+                            Image(image: AssetImage('assets/4.png'),
+                                height: 150,
+                                width:180),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           );
         });
+
+
   }
+
+
 
   Widget buildProfilePhotoWidget(BuildContext context, ProfilePageModel model) {
     return Row(

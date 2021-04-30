@@ -1,3 +1,5 @@
+import 'package:ourESchool/UI/pages/AllFaculties/AllFaculties.dart';
+import 'package:ourESchool/UI/pages/AllStudents/AllStudents.dart';
 import 'package:ourESchool/UI/pages/Dashboard/CommitteeFormation/AdminViewCommittee.dart';
 import 'package:ourESchool/UI/pages/Dashboard/CourseRegistration/AdminCoursesRegistration.dart';
 import 'package:ourESchool/UI/pages/Dashboard/Subjects/Subjects.dart';
@@ -5,6 +7,7 @@ import 'package:ourESchool/core/helpers/FirebaseAnalytics.dart';
 import 'package:ourESchool/imports.dart';
 
 class AdminDashboard extends StatefulWidget with AnalyticsScreen {
+  static const id = 'AdminDashboard';
   AdminDashboard({Key key}) : super(key: key) {
     // setCurrentScreen();
   }
@@ -184,6 +187,24 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                   ) ,
                                 ],
                               ),
+
+                              ColumnReusableCardButton(
+                                  height: 60,
+                                  tileColor: Colors.lightBlue,
+                                  label: "All Students",
+                                  onPressed: () {
+                                    kopenPage(context, DashboardScreen());
+                                  },
+                                  icon: FontAwesomeIcons.school),
+
+                              ColumnReusableCardButton(
+                                  height: 60,
+                                  tileColor: Colors.teal,
+                                  label: "All faculties",
+                                  onPressed: () {
+                                    kopenPage(context, DashboardScreenF());
+                                  },
+                                  icon: FontAwesomeIcons.school),
                             ],
                           ),
                         ],

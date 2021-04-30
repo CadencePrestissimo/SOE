@@ -25,6 +25,12 @@ class LoginPageModel extends BaseModel {
   }
 
   Future checkUserDetails({
+     String name,
+    String rollNo,
+    String semester,
+   String course,
+     String branch,
+     String batch,
     String schoolCode,
     String email,
     String password,
@@ -34,6 +40,12 @@ class LoginPageModel extends BaseModel {
   }) async {
     setState(ViewState.Busy);
     ReturnType response = await _authenticationService.checkDetails(
+        name: name ,
+        rollNo: rollNo,
+        semester: semester,
+        course: course,
+        branch: branch,
+        batch: batch,
         email: email,
         password: password,
         schoolCode: schoolCode,
@@ -66,7 +78,7 @@ class LoginPageModel extends BaseModel {
           return false;
         }
         AuthErrors res =
-            await _registerUser(email, password, userType, schoolCode);
+            await _registerUser(name, rollNo, semester,course,branch, batch ,email, password, userType, schoolCode);
         setState(ViewState.Idle);
         if (res == AuthErrors.SUCCESS) {
           return true;
@@ -89,9 +101,15 @@ class LoginPageModel extends BaseModel {
     return authError;
   }
 
-  Future _registerUser(String email, String password, UserType userType,
+  Future _registerUser(String name, String rollNo, String semester, String course, String branch, String batch, String email, String password, UserType userType,
       String schoolCode) async {
     AuthErrors authError = await _authenticationService.emailPasswordRegister(
+      name,
+      rollNo,
+      semester,
+      course,
+      branch,
+      batch,
       email,
       password,
       userType,

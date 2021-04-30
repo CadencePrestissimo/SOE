@@ -64,32 +64,9 @@ class _LoadFirbaseStoragePdfState extends State<LoadFirbaseStoragePdf> {
       body: Stack(
         children: <Widget>[
           Container(
-            height: 360,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(50.0),
-                    bottomRight: Radius.circular(50.0)),
-                gradient: LinearGradient(
-                    colors: [blue, cyan],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight)),
-          ),
-          Container(
-            margin: const EdgeInsets.only(top: 80),
+            margin: const EdgeInsets.only(top: 10),
             child: Column(
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Center(
-                    child: Text(
-                      "Click below link to open Academic Calendar",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontStyle: FontStyle.italic),
-                    ),
-                  ),
-                ),
                 SizedBox(height: 20.0),
                 Expanded(
                   child: Stack(
@@ -99,7 +76,7 @@ class _LoadFirbaseStoragePdfState extends State<LoadFirbaseStoragePdf> {
                         margin: const EdgeInsets.only(
                             left: 30.0, right: 30.0, top: 10.0),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(30.0),
+                          borderRadius: BorderRadius.circular(20.0),
                           child: InkWell(
                             // child:
                             // Image.asset('assets/images/flutter_slides.jpg'),
@@ -133,7 +110,7 @@ class _LoadFirbaseStoragePdfState extends State<LoadFirbaseStoragePdf> {
                 gradient: LinearGradient(
                   colors: [cyan, blue],
                 ),
-                borderRadius: BorderRadius.circular(30.0)),
+                borderRadius: BorderRadius.circular(10.0)),
             child: FlatButton(
               onPressed: () {
                 setState(() {

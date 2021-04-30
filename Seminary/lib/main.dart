@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:ourESchool/UI/pages/Dashboard/AdminDashboard.dart';
 
 import 'imports.dart';
 
@@ -80,6 +81,9 @@ class OurSchoolApp extends StatelessWidget {
         WelcomeScreen.id: (context) => WelcomeScreen(),
         Home.id: (context) => Home(),
         ProfilePage.id: (context) => ProfilePage(),
+        AdminDashboard.id: (context) => AdminDashboard(),
+        StudentDashboard.id: (context)=>StudentDashboard(),
+        MainDashboard.id: (context) => MainDashboard(),
         GuardianProfilePage.id: (context) => GuardianProfilePage(
               title: 'Admin Profile',
             ),

@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:ourESchool/core/services/Services.dart';
 
 class StorageServices extends Services {
+
   StorageServices() {
     getFirebaseUser();
     getSchoolCode();
@@ -16,6 +17,7 @@ class StorageServices extends Services {
 
     String _extension = p.extension(filePath);
     String fileName = firebaseUser.uid + _extension;
+
     final UploadTask uploadTask = storageReference
         .child(schoolCode + '/' + "Profile" + '/' + fileName)
         .putFile(
